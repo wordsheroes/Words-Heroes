@@ -112,7 +112,7 @@ header h1 {
 .blue { background-color: #00BFFF; }
 .gray { background-color: #808080; }
 
-/* رسالة تسجيل الدخول */
+/* Toast */
 .toast {
   position: fixed;
   bottom: 20px;
@@ -130,33 +130,12 @@ header h1 {
   backdrop-filter: blur(10px);
 }
 
-.toast button {
-  padding: 5px 10px;
-  margin-right: 5px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.toast #skipBtn {
-  background: transparent;
-  color: white;
-  border: 2px solid white;
-}
-
-.toast #loginBtn {
-  background: white;
-  color: black;
-  border: none;
-}
-
-/* شريط تقدم عكسي أبيض */
 .toast #progress {
-  height: 100%;
+  height: 4px;
   background: white;
   width: 100%;
   border-radius: 3px;
+  margin-top: 5px;
   transition: width 0.1s linear;
 }
 </style>
@@ -180,8 +159,8 @@ header h1 {
 <div class="content" id="content">
   <div class="game-title">مرحبا بك في Words Heroes</div>
   <button class="game-btn yellow" id="normalBtn">normal Mood</button>
-  <button class="game-btn blue" onclick="startOnline()">مباريات أونلاين</button>
-  <button class="game-btn gray" onclick="startChampionship()">🏆 Championships</button>
+  <button class="game-btn blue" id="onlineBtn">مباريات أونلاين</button>
+  <button class="game-btn gray" id="champBtn">🏆 Championships</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -196,13 +175,16 @@ const settingsToggle = document.getElementById('settingsToggle');
 const homePageBtn = document.getElementById('homePageBtn');
 const coinsDisplay = document.getElementById('coinsDisplay');
 const normalBtn = document.getElementById('normalBtn');
+const onlineBtn = document.getElementById('onlineBtn');
+const champBtn = document.getElementById('champBtn');
 
-let isLoggedIn = false; // false = لم يسجل
-let coins = 0; // العملات
+// ===== بيانات اللاعب =====
+let isLoggedIn = true; // false = غير مسجل
+let coins = 100;       // رصيد اللاعب
 
-// تحديث العملات
+// ===== تحديث العملات =====
 function updateCoinsDisplay() {
-  coinsDisplay.textContent = isLoggedIn ? `Coins: ${coins}` : '----';
+  coinsDisplay.textContent = isLoggedIn ? `${coins} 🪙` : '----';
 }
 
 coinsDisplay.onclick = () => {
@@ -213,83 +195,72 @@ coinsDisplay.onclick = () => {
   }
 };
 
-// السايدبار
+// ===== Sidebar =====
 menuBtn.onclick = () => sidebar.classList.toggle('active');
 
 settingsToggle.onclick = () => {
-  toast.textContent = "تم دخول Settings ✅";
-  toast.style.display = 'block';
-  setTimeout(() => toast.style.display = 'none', 1500);
+  toastMessage("تم دخول Settings ✅", 1.5);
   sidebar.classList.remove('active');
   content.innerHTML = `<div class="game-title">Settings</div>`;
 };
 
 homePageBtn.onclick = () => {
   sidebar.classList.remove('active');
-  content.innerHTML = `
-    <div class="game-title">مرحبا بك في Words Heroes</div>
-    <button class="game-btn yellow" id="normalBtn">normal Mood</button>
-    <button class="game-btn blue" onclick="startOnline()">مباريات أونلاين</button>
-    <button class="game-btn gray" onclick="startChampionship()">🏆 Championships</button>
-  `;
-  attachNormalButton();
+  loadHomePage();
 };
 
 profileBtn.onclick = () => { window.location.href = "Profil.html"; };
 
-// الألعاب
-function attachNormalButton(){
-  const normalBtnNew = document.getElementById('normalBtn');
-  normalBtnNew.onclick = () => {
-    if(!isLoggedIn){
-      showToast("عليك تسجيل الدخول أولاً");
-    } else {
-      startNormal();
-    }
-  }
-}
-attachNormalButton();
-
-function startNormal() { window.location.href = "normal-mood.html"; }
-function startOnline() {
-  toast.textContent = "سيتم إضافته لاحقاً";
-  toast.style.display = 'block';
-  setTimeout(() => toast.style.display = 'none', 2000);
-}
-function startChampionship() {
-  toast.textContent = "ليست هناك أي بطولة حالياً";
-  toast.style.display = 'block';
-  setTimeout(() => toast.style.display = 'none', 2000);
+// ===== الألعاب =====
+function loadHomePage(){
+  content.innerHTML = `
+    <div class="game-title">مرحبا بك في Words Heroes</div>
+    <button class="game-btn yellow" id="normalBtn">normal Mood</button>
+    <button class="game-btn blue" id="onlineBtn">مباريات أونلاين</button>
+    <button class="game-btn gray" id="champBtn">🏆 Championships</button>
+  `;
+  attachButtons();
 }
 
-// --------------------
-// Toast تسجيل الدخول مع شريط تنازلي
-// --------------------
-function showToast(msg,duration=3){
-  toast.style.display='block';
-  toast.innerHTML = `<div>${msg}</div>`;
-  const progress = document.createElement('div');
-  progress.id='progress';
+function attachButtons(){
+  const normalBtn = document.getElementById('normalBtn');
+  normalBtn.onclick = () => {
+    if(!isLoggedIn) showToast("عليك تسجيل الدخول أولاً");
+    else startNormal();
+  };
+  const onlineBtn = document.getElementById('onlineBtn');
+  onlineBtn.onclick = () => showToast("سيتم إضافته لاحقاً");
+  const champBtn = document.getElementById('champBtn');
+  champBtn.onclick = () => showToast("ليست هناك أي بطولة حالياً");
+}
+
+function startNormal(){ window.location.href = "normal-mood.html"; }
+
+// ===== Toast =====
+function showToast(msg, duration=3){
+  toast.style.display = 'block';
+  toast.innerHTML = `<div>${msg}</div><div id="progress"></div>`;
+  const progress = document.getElementById('progress');
   progress.style.width='100%';
-  progress.style.height='4px';
-  progress.style.background='white';
-  progress.style.marginTop='5px';
-  progress.style.borderRadius='3px';
-  toast.appendChild(progress);
-
-  let time=duration;
-  const interval=setInterval(()=>{
-    time-=0.1;
-    if(time<=0){ clearInterval(interval); toast.style.display='none'; }
-    else{ progress.style.width=(time/duration)*100 + '%'; }
+  let time = duration;
+  const interval = setInterval(()=>{
+    time -= 0.1;
+    if(time <=0){
+      clearInterval(interval);
+      toast.style.display='none';
+    } else {
+      progress.style.width = (time/duration)*100 + '%';
+    }
   },100);
 }
 
-// مثال: تفعيل تسجيل الدخول لتجربة العملات
-// قم بتغيير isLoggedIn و coins حسب الحاجة
-isLoggedIn = false; // false = غير مسجل، true = مسجل
-coins = 100; // عدد العملات
+function toastMessage(msg, duration=3){
+  showToast(msg,duration);
+}
+
+// ===== بدء الصفحة =====
 updateCoinsDisplay();
+attachButtons();
 
 </script>
 </body>
