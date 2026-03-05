@@ -24,7 +24,6 @@ header {
   padding: 15px 20px;
   background-color: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  position: relative;
 }
 
 header h1 {
@@ -59,9 +58,7 @@ header h1 {
   transition: left 0.3s ease;
 }
 
-.sidebar.active {
-  left: 0;
-}
+.sidebar.active { left: 0; }
 
 .sidebar h2 {
   cursor: pointer;
@@ -99,17 +96,31 @@ header h1 {
   margin-bottom: 20px;
 }
 
+/* رسالة Toast بشكل جديد */
 .toast {
   position: fixed;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #808080;
+  background: linear-gradient(135deg, #2c006d, #9b1acc, #e02fb5);
   color: white;
-  padding: 10px 18px;
-  border-radius: 8px;
+  padding: 15px 18px;
+  border-radius: 10px;
   display: none;
   font-weight: bold;
+  width: 300px;
+  max-width: 90%;
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+}
+
+.toast #progress {
+  height: 4px;
+  background: white;
+  width: 100%;
+  border-radius: 3px;
+  margin-top: 8px;
+  transition: width 0.1s linear;
 }
 </style>
 </head>
@@ -130,10 +141,13 @@ header h1 {
 <div class="content" id="content">
   <img src="profile-placeholder.png" alt="Profile Image" class="profile-img" id="profileImage">
   <div class="profile-name" id="profileName">User</div>
-  <div class="profile-level" id="profileLevel"></div>
+  <div class="profile-level" id="profileLevel">Level 1</div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">
+  <div id="message">لم يتم تسجيل الحساب</div>
+  <div id="progress"></div>
+</div>
 
 <script>
 const menuBtn = document.getElementById('menuBtn');
@@ -143,7 +157,6 @@ const homeBtn = document.getElementById('homeBtn');
 const profileName = document.getElementById('profileName');
 const profileLevel = document.getElementById('profileLevel');
 
-// متغير للتحقق إذا المستخدم مسجل
 let isLoggedIn = false; // false = غير مسجل، true = مسجل
 
 // فتح وإغلاق السايدبار
@@ -154,7 +167,6 @@ document.getElementById('editProfile').onclick = () => {
   if(!isLoggedIn){
     showToast("يرجى تسجيل الحساب أولاً");
   } else {
-    showToast("تعديل البروفايل");
     alert("هنا يمكنك تعديل البروفايل");
   }
   sidebar.classList.remove('active');
@@ -164,7 +176,6 @@ document.getElementById('logout').onclick = () => {
   if(!isLoggedIn){
     showToast("يرجى تسجيل الحساب أولاً");
   } else {
-    showToast("تم تسجيل الخروج");
     alert("تم تسجيل الخروج من الحساب");
   }
   sidebar.classList.remove('active');
@@ -175,19 +186,32 @@ homeBtn.onclick = () => {
   window.location.href = "main.html"; 
 };
 
-// دالة اظهار toast
-function showToast(message){
-  toast.textContent = message;
-  toast.style.display = "block";
-  setTimeout(() => toast.style.display = "none", 2000);
+// دالة اظهار toast بشكل جديد
+function showToast(message, duration=5){
+  toast.style.display = 'block';
+  document.getElementById('message').textContent = message;
+
+  let time = duration;
+  const progress = document.getElementById('progress');
+  progress.style.width = '100%';
+
+  const interval = setInterval(() => {
+    time -= 0.1;
+    if(time <= 0){
+      clearInterval(interval);
+      toast.style.display = 'none';
+    } else {
+      progress.style.width = (time/duration)*100 + '%';
+    }
+  }, 100);
 }
 
 // عند تحميل الصفحة
 window.onload = () => {
   if(!isLoggedIn){
     profileName.textContent = "User";
-    profileLevel.textContent = "";
-    showToast("لم يتم تسجيل الحساب");
+    profileLevel.textContent = "Level 1";
+    showToast("لم يتم تسجيل الحساب", 5);
   }
 };
 </script>
