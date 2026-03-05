@@ -5,305 +5,224 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profile - Words Heroes</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #2c006d, #9b1acc, #e02fb5);
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-  color: white;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background-color: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-}
-
-header h1 { font-size: 24px; margin: 0; font-weight: bold; }
-
-.icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
-  background-color: rgba(255,255,255,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 18px;
-  color: #333;
-}
-
-.sidebar {
-  position: fixed;
-  top: 60px;
-  left: -100%;
-  width: 250px;
-  height: calc(100% - 60px);
-  background-color: rgba(0,0,0,0.6);
-  backdrop-filter: blur(10px);
-  color: white;
-  padding: 20px;
-  transition: left 0.3s ease;
-}
-
-.sidebar.active { left: 0; }
-
-.sidebar h2 { cursor: pointer; user-select: none; margin-bottom: 15px; }
-
-.content {
-  flex: 1;
-  color: white;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.profile-img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 3px solid white;
-  margin-bottom: 15px;
-  object-fit: cover;
-}
-
-.profile-name { font-size: 24px; font-weight: bold; margin-bottom: 8px; }
-.profile-level { font-size: 18px; margin-bottom: 5px; }
-.profile-coins { font-size: 16px; margin-bottom: 20px; }
-
-#loginPanel { display: none; margin-top: 10px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; width: 250px; }
-#loginPanel input { width: 100%; padding: 8px; margin: 5px 0; border-radius: 5px; border: none; }
-#loginPanel button { padding: 10px; width: 100%; margin-top: 10px; border-radius: 8px; border: none; background: #FFD700; color: black; font-weight: bold; cursor: pointer; }
-
-#editPanel {
-  display: none;
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.8);
-  padding: 20px;
-  border-radius: 15px;
-  z-index: 999;
-  width: 300px;
-  text-align: center;
-}
-
-#editPanel input[type="text"], #editPanel input[type="password"] { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: none; }
-#editPanel input[type="file"] { margin: 10px 0; }
-
-#saveEdit {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  background: gold;
-}
-
-#saveEdit.disabled { background: gray; cursor: not-allowed; }
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #2c006d, #9b1acc, #e02fb5);
-  padding: 15px 18px;
-  border-radius: 10px;
-  display: none;
-  font-weight: bold;
-  color: white;
-  width: 300px;
-  max-width: 90%;
-  z-index: 1000;
-}
-
-.toast #progress {
-  height: 4px;
-  background: white;
-  width: 100%;
-  border-radius: 3px;
-  margin-top: 8px;
-}
+body { margin:0; font-family:Arial,sans-serif; min-height:100vh; background:linear-gradient(135deg,#2c006d,#9b1acc,#e02fb5); color:white; display:flex; flex-direction:column; overflow-x:hidden; }
+header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background-color:rgba(255,255,255,0.15); backdrop-filter:blur(10px); }
+header h1 { font-size:24px; margin:0; font-weight:bold; }
+.icon { width:28px; height:28px; border-radius:4px; background-color:rgba(255,255,255,0.6); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:18px; color:#333; }
+.sidebar { position:fixed; top:60px; left:-100%; width:250px; height:calc(100%-60px); background-color:rgba(0,0,0,0.6); backdrop-filter:blur(10px); color:white; padding:20px; transition:left 0.3s ease; }
+.sidebar.active { left:0; }
+.sidebar h2 { cursor:pointer; user-select:none; display:block; width:100%; margin:10px 0; font-size:18px; color:white; text-align:left; padding:5px 0; }
+.content { flex:1; padding:20px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.profile-img { width:120px; height:120px; border-radius:50%; border:3px solid white; margin-bottom:15px; object-fit:cover; }
+.profile-name { font-size:24px; font-weight:bold; margin-bottom:8px; }
+.profile-level { font-size:18px; margin-bottom:5px; }
+.profile-coins { font-size:16px; margin-bottom:20px; cursor:pointer; }
+#loginPanel, #editPanel, #passPanel { display:none; background:rgba(255,255,255,0.1); padding:15px; border-radius:10px; width:250px; text-align:center; }
+#loginPanel input, #editPanel input, #passPanel input { width:100%; padding:8px; margin:5px 0; border-radius:5px; border:none; }
+#loginPanel button, #editPanel button, #passPanel button { padding:10px; width:100%; margin-top:10px; border-radius:8px; border:none; background:#FFD700; color:black; font-weight:bold; cursor:pointer; }
+#editPanel input[type="file"] { margin:10px 0; }
+#saveEdit.disabled { background:gray; cursor:not-allowed; }
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#2c006d,#9b1acc,#e02fb5); padding:15px 18px; border-radius:10px; display:none; font-weight:bold; color:white; width:300px; max-width:90%; z-index:1000; }
+.toast #progress { height:4px; background:white; width:100%; border-radius:3px; margin-top:8px; transition:width 0.1s linear; }
 </style>
 </head>
 <body>
 
 <header>
-<div class="icon" id="menuBtn">&#9776;</div>
-<h1>Profile</h1>
-<div class="icon" id="homeBtn">🏠</div>
+  <div class="icon" id="menuBtn">&#9776;</div>
+  <h1>Profile</h1>
+  <div class="icon" id="homeBtn">🏠</div>
 </header>
 
 <div class="sidebar" id="sidebar">
-<h2 id="editProfile">Edit Profile ></h2>
-<h2 id="logout">Logout ></h2>
+  <h2 id="editProfile">Edit Profile ></h2>
+  <h2 id="changePass">Change Password ></h2>
+  <h2 id="logout">Logout ></h2>
 </div>
 
-<div class="content">
-<img src="profile-placeholder.png" class="profile-img" id="profileImage">
-<div class="profile-name" id="profileName">User</div>
-<div class="profile-level" id="profileLevel">----</div>
-<div class="profile-coins" id="profileCoins">Coins: 0</div>
+<div class="content" id="content">
+  <img src="profile-placeholder.png" alt="Profile Image" class="profile-img" id="profileImage">
+  <div class="profile-name" id="profileName">User</div>
+  <div class="profile-level" id="profileLevel">----</div>
+  <div class="profile-coins" id="profileCoins">Coins: 0</div>
 
-<div id="loginPanel">
-<input type="text" id="username" placeholder="Username">
-<input type="password" id="password" placeholder="Password">
-<button id="loginBtn">تسجيل الدخول</button>
-</div>
-</div>
+  <div id="loginPanel">
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button id="loginBtn">تسجيل الدخول</button>
+  </div>
 
-<div id="editPanel">
-<h3>تعديل البروفايل</h3>
-<img src="profile-placeholder.png" id="editImage" class="profile-img">
-<input type="text" id="editUsername" placeholder="اسم المستخدم">
-<input type="file" id="editFile" accept="image/*">
-<button id="saveEdit">Save (100 عملة)</button>
+  <div id="editPanel">
+    <h3>تعديل البروفايل</h3>
+    <img src="profile-placeholder.png" id="editImage" class="profile-img">
+    <input type="text" id="editUsername" placeholder="اسم المستخدم">
+    <input type="file" id="editFile" accept="image/*">
+    <button id="saveEdit">Save (100 عملة)</button>
+  </div>
 
-<!-- تغيير كلمة المرور مجاني -->
-<h3>تغيير كلمة المرور</h3>
-<input type="password" id="oldPassword" placeholder="كلمة المرور القديمة">
-<input type="password" id="newPassword" placeholder="كلمة المرور الجديدة">
-<button id="changePasswordBtn">تغيير كلمة المرور</button>
+  <div id="passPanel">
+    <h3>تغيير كلمة المرور</h3>
+    <input type="password" id="oldPass" placeholder="كلمة المرور القديمة">
+    <input type="password" id="newPass" placeholder="كلمة المرور الجديدة">
+    <button id="savePass">تغيير كلمة المرور</button>
+  </div>
+
 </div>
 
 <div class="toast" id="toast">
-<div id="message"></div>
-<div id="progress"></div>
+  <div id="message">لم يتم تسجيل الحساب</div>
+  <div id="progress"></div>
 </div>
 
 <script>
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+const toast = document.getElementById('toast');
+const homeBtn = document.getElementById('homeBtn');
+const profileName = document.getElementById('profileName');
+const profileLevel = document.getElementById('profileLevel');
+const profileCoins = document.getElementById('profileCoins');
+const loginPanel = document.getElementById('loginPanel');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const loginBtn = document.getElementById('loginBtn');
+const editProfileBtn = document.getElementById('editProfile');
+const changePassBtn = document.getElementById('changePass');
+const logoutBtn = document.getElementById('logout');
+const editPanel = document.getElementById('editPanel');
+const editUsername = document.getElementById('editUsername');
+const editFile = document.getElementById('editFile');
+const editImage = document.getElementById('editImage');
+const saveEdit = document.getElementById('saveEdit');
+const passPanel = document.getElementById('passPanel');
+const oldPass = document.getElementById('oldPass');
+const newPass = document.getElementById('newPass');
+const savePass = document.getElementById('savePass');
+
+let isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let currentUser = JSON.parse(localStorage.getItem("currentUser")) || null;
 
-const menuBtn = document.getElementById('menuBtn');
-const sidebar = document.getElementById('sidebar');
-const loginPanel = document.getElementById('loginPanel');
-
+// Sidebar toggle
 menuBtn.onclick = () => sidebar.classList.toggle('active');
+homeBtn.onclick = () => window.location.href="main.html";
 
+// تحديث العرض
 function updateDisplay(){
-if(!currentUser){
-document.getElementById("profileName").textContent="User";
-document.getElementById("profileLevel").textContent="----";
-document.getElementById("profileCoins").textContent="Coins: 0";
-loginPanel.style.display="block";
-}else{
-document.getElementById("profileName").textContent=currentUser.username;
-document.getElementById("profileLevel").textContent="Level "+currentUser.level;
-document.getElementById("profileCoins").textContent="Coins: "+currentUser.coins;
-document.getElementById("profileImage").src=currentUser.image;
-
-loginPanel.style.display="none";
-if(currentUser.coins < 100){
-document.getElementById("saveEdit").style.display="none";
-}else{
-document.getElementById("saveEdit").style.display="block";
-}
-}
+  if(!isLoggedIn){
+    profileLevel.textContent = "----";
+    profileCoins.textContent = "Coins: 0";
+    loginPanel.style.display="block";
+    editPanel.style.display="none";
+    passPanel.style.display="none";
+  } else {
+    profileLevel.textContent = "Level " + currentUser.level;
+    profileCoins.textContent = "Coins: " + currentUser.coins;
+    profileName.textContent = currentUser.username;
+    profileImage.src = currentUser.image;
+    loginPanel.style.display="none";
+    if(currentUser.coins<100){ saveEdit.classList.add("disabled"); }
+    else { saveEdit.classList.remove("disabled"); }
+  }
 }
 
-document.getElementById("loginBtn").onclick = () => {
-const user = document.getElementById("username").value.trim();
-const pass = document.getElementById("password").value.trim();
-if(!user || !pass){ showToast("يرجى إدخال البيانات"); return; }
-let existing = users.find(u=>u.username===user);
-if(existing){
-if(existing.password!==pass){ showToast("كلمة المرور غير صحيحة"); return; }
-currentUser = existing;
-}else{
-if(users.find(u=>u.username===user)){ showToast("اسم المستخدم مستعمل"); return; }
-currentUser={username:user,password:pass,level:1,coins:100,image:"profile-placeholder.png"};
-users.push(currentUser);
-}
-localStorage.setItem("users",JSON.stringify(users));
-localStorage.setItem("currentUser",JSON.stringify(currentUser));
-showToast("تم تسجيل الدخول");
-updateDisplay();
+// تسجيل / تسجيل الدخول
+loginBtn.onclick = () => {
+  const user = usernameInput.value.trim();
+  const pass = passwordInput.value.trim();
+  if(!user || !pass){ showToast("يرجى إدخال البيانات"); return; }
+
+  const existing = users.find(u=>u.username===user);
+  if(existing){
+    if(existing.password===pass){
+      currentUser = existing;
+      isLoggedIn = true;
+      showToast("تم تسجيل الدخول");
+    } else { showToast("اسم المستخدم موجود وكلمة المرور غير صحيحة"); return; }
+  } else {
+    const newUser = {username:user,password:pass,level:1,image:"profile-placeholder.png",coins:100};
+    users.push(newUser);
+    currentUser = newUser;
+    isLoggedIn = true;
+    showToast("تم إنشاء الحساب وتسجيل الدخول");
+  }
+  saveToStorage();
+  updateDisplay();
 };
 
-document.getElementById("editProfile").onclick = () => {
-if(!currentUser){ showToast("يرجى تسجيل الحساب أولاً"); sidebar.classList.remove('active'); return; }
-document.getElementById("editPanel").style.display="block";
-document.getElementById("editUsername").value=currentUser.username;
-document.getElementById("editImage").src=currentUser.image;
-sidebar.classList.remove('active');
+// Edit profile
+editProfileBtn.onclick = () => {
+  if(!isLoggedIn){ showToast("يرجى تسجيل الحساب أولاً"); sidebar.classList.remove('active'); return; }
+  editPanel.style.display="block"; passPanel.style.display="none";
+  editUsername.value=currentUser.username; editImage.src=currentUser.image;
+  sidebar.classList.remove('active');
 };
 
-document.getElementById("saveEdit").onclick = () => {
-let newName = document.getElementById("editUsername").value.trim();
-if(newName !== currentUser.username){
-if(users.find(u=>u.username===newName)){ showToast("اسم المستخدم مستعمل"); return; }
-currentUser.username=newName;
-}
-const file = document.getElementById("editFile").files[0];
-if(file){
-const reader = new FileReader();
-reader.onload=function(e){
-currentUser.image=e.target.result;
-document.getElementById("profileImage").src=currentUser.image;
-document.getElementById("editImage").src=currentUser.image;
-localStorage.setItem("currentUser",JSON.stringify(currentUser));
-localStorage.setItem("users",JSON.stringify(users));
-};
-reader.readAsDataURL(file);
-}
-currentUser.coins -= 100;
-localStorage.setItem("currentUser",JSON.stringify(currentUser));
-localStorage.setItem("users",JSON.stringify(users));
-document.getElementById("editPanel").style.display="none";
-showToast("تم تعديل البروفايل (-100)");
-updateDisplay();
+saveEdit.onclick = () => {
+  if(saveEdit.classList.contains("disabled")){ showToast("رصيدك أقل من 100 عملة"); return; }
+  const newName = editUsername.value.trim();
+  if(newName!==currentUser.username && users.find(u=>u.username===newName)){ showToast("هذا الاسم مستخدم مسبقاً"); return; }
+  if(newName) currentUser.username=newName;
+
+  const file = editFile.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = e => { currentUser.image = e.target.result; profileImage.src=currentUser.image; editImage.src=currentUser.image; }
+    reader.readAsDataURL(file);
+  }
+  currentUser.coins-=100;
+  showToast("تم تعديل البروفايل (-100 عملة)");
+  editPanel.style.display="none"; updateDisplay(); saveToStorage();
 };
 
-// تغيير كلمة المرور
-document.getElementById("changePasswordBtn").onclick = () => {
-let oldPass = document.getElementById("oldPassword").value;
-let newPass = document.getElementById("newPassword").value;
-if(oldPass!==currentUser.password){ showToast("كلمة المرور القديمة غير صحيحة"); return; }
-if(!newPass){ showToast("الرجاء إدخال كلمة المرور الجديدة"); return; }
-currentUser.password=newPass;
-localStorage.setItem("currentUser",JSON.stringify(currentUser));
-localStorage.setItem("users",JSON.stringify(users));
-document.getElementById("oldPassword").value="";
-document.getElementById("newPassword").value="";
-showToast("تم تغيير كلمة المرور بنجاح");
+// Change password
+changePassBtn.onclick = () => {
+  if(!isLoggedIn){ showToast("يرجى تسجيل الحساب أولاً"); sidebar.classList.remove('active'); return; }
+  passPanel.style.display="block"; editPanel.style.display="none";
+  sidebar.classList.remove('active');
 };
 
-document.getElementById("logout").onclick = () => {
-currentUser=null;
-localStorage.removeItem("currentUser");
-showToast("تم تسجيل الخروج");
-updateDisplay();
+savePass.onclick = () => {
+  if(oldPass.value!==currentUser.password){ showToast("كلمة المرور القديمة غير صحيحة"); return; }
+  if(!newPass.value){ showToast("يرجى إدخال كلمة المرور الجديدة"); return; }
+  currentUser.password = newPass.value;
+  showToast("تم تغيير كلمة المرور بالمجان ✅");
+  passPanel.style.display="none"; saveToStorage();
 };
 
-document.getElementById("homeBtn").onclick = ()=>window.location.href="main.html";
+// Logout
+logoutBtn.onclick = () => {
+  if(!isLoggedIn){ showToast("يرجى تسجيل الحساب أولاً"); sidebar.classList.remove('active'); return; }
+  isLoggedIn=false; currentUser=null;
+  updateDisplay(); saveToStorage();
+  showToast("تم تسجيل الخروج");
+  sidebar.classList.remove('active');
+};
 
-function showToast(msg){
-const toast=document.getElementById("toast");
-const progress=document.getElementById("progress");
-toast.style.display="block";
-document.getElementById("message").textContent=msg;
-let time=3;
-const interval=setInterval(()=>{
-time-=0.1;
-progress.style.width=(time/3)*100+"%";
-if(time<=0){ clearInterval(interval); toast.style.display="none"; }
-},100);
+// Toast
+function showToast(msg,duration=3){
+  toast.style.display='block';
+  document.getElementById('message').textContent=msg;
+  const progress = document.getElementById('progress');
+  let time=duration;
+  progress.style.width='100%';
+  const interval=setInterval(()=>{
+    time-=0.1;
+    if(time<=0){ clearInterval(interval); toast.style.display='none'; }
+    else { progress.style.width=(time/duration)*100 + '%'; }
+  },100);
 }
 
-updateDisplay();
+// حفظ البيانات في localStorage
+function saveToStorage(){
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  localStorage.setItem("isLoggedIn", isLoggedIn);
+  localStorage.setItem("coins", currentUser ? currentUser.coins : 0);
+}
+
+// تحميل الصفحة
+window.onload = updateDisplay;
 </script>
 
 </body>
