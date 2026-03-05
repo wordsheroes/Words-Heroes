@@ -9,7 +9,7 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   min-height: 100vh;
-  background: linear-gradient(135deg, #2c006d, #9b1acc, #e02fb5);
+  background: linear-gradient(135deg,#2c006d,#9b1acc,#e02fb5);
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
@@ -26,38 +26,10 @@ header {
   position: relative;
 }
 
-header h1 {
-  font-size: 24px;
-  margin: 0;
-  font-weight: bold;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.coins-display {
-  cursor: pointer;
-  font-weight: bold;
-  background: rgba(255,255,255,0.2);
-  padding: 5px 10px;
-  border-radius: 8px;
-}
-
-.icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
-  background-color: rgba(255,255,255,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 18px;
-  color: #333;
-}
+header h1 { font-size:24px; margin:0; font-weight:bold; }
+.header-right { display:flex; align-items:center; gap:10px; }
+.coins-display { cursor:pointer; font-weight:bold; background:rgba(255,255,255,0.2); padding:5px 10px; border-radius:8px; }
+.icon { width:28px; height:28px; border-radius:4px; background-color:rgba(255,255,255,0.6); display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:18px; color:#333; }
 
 .sidebar {
   position: fixed;
@@ -67,76 +39,34 @@ header h1 {
   height: calc(100% - 60px);
   background-color: rgba(0,0,0,0.6);
   backdrop-filter: blur(10px);
-  color: white;
-  padding: 20px;
+  color:white;
+  padding:20px;
   transition: left 0.3s ease;
 }
+.sidebar.active { left:0; }
+.sidebar h2 { cursor:pointer; user-select:none; display:block; width:100%; margin:10px 0; font-size:18px; color:white; text-align:left; padding:5px 0; }
 
-.sidebar.active { left: 0; }
+.content { flex:1; padding:20px; }
+.game-title { font-size:28px; font-weight:bold; margin-bottom:20px; }
+.game-btn { padding:20px; margin:10px 0; font-size:20px; font-weight:bold; border:none; border-radius:12px; cursor:pointer; width:100%; color:white; }
+.yellow { background-color:#FFD700; } 
+.blue { background-color:#00BFFF; } 
+.gray { background-color:#808080; }
 
-.sidebar h2 {
-  cursor: pointer;
-  user-select: none;
-  display: block;
-  width: 100%;
-  margin: 10px 0;
-  font-size: 18px;
-  color: white;
-  text-align: left;
-  padding: 5px 0;
-}
-
-.content {
-  flex: 1;
-  padding: 20px;
-}
-
-.game-title {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.game-btn {
-  padding: 20px;
-  margin: 10px 0;
-  font-size: 20px;
-  font-weight: bold;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  width: 100%;
-  color: white;
-}
-.yellow { background-color: #FFD700; }
-.blue { background-color: #00BFFF; }
-.gray { background-color: #808080; }
-
-/* Toast */
 .toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #2c006d, #9b1acc, #e02fb5);
-  color: white;
-  padding: 15px 18px;
-  border-radius: 10px;
-  display: none;
-  font-weight: bold;
-  width: 300px;
-  max-width: 90%;
-  z-index: 9999;
-  backdrop-filter: blur(10px);
-}
-
-.toast #progress {
-  height: 4px;
-  background: white;
-  width: 100%;
-  border-radius: 3px;
-  margin-top: 5px;
-  transition: width 0.1s linear;
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,#2c006d,#9b1acc,#e02fb5);
+  color:white;
+  padding:15px 18px;
+  border-radius:10px;
+  display:none;
+  font-weight:bold;
+  width:300px; max-width:90%;
+  z-index:9999;
+  backdrop-filter:blur(10px);
 }
 </style>
 </head>
@@ -159,8 +89,8 @@ header h1 {
 <div class="content" id="content">
   <div class="game-title">مرحبا بك في Words Heroes</div>
   <button class="game-btn yellow" id="normalBtn">normal Mood</button>
-  <button class="game-btn blue" id="onlineBtn">مباريات أونلاين</button>
-  <button class="game-btn gray" id="champBtn">🏆 Championships</button>
+  <button class="game-btn blue" onclick="startOnline()">مباريات أونلاين</button>
+  <button class="game-btn gray" onclick="startChampionship()">🏆 Championships</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -175,93 +105,68 @@ const settingsToggle = document.getElementById('settingsToggle');
 const homePageBtn = document.getElementById('homePageBtn');
 const coinsDisplay = document.getElementById('coinsDisplay');
 const normalBtn = document.getElementById('normalBtn');
-const onlineBtn = document.getElementById('onlineBtn');
-const champBtn = document.getElementById('champBtn');
 
-// ===== بيانات اللاعب =====
-let isLoggedIn = true; // false = غير مسجل
-let coins = 100;       // رصيد اللاعب
+// جلب بيانات تسجيل الدخول من localStorage
+let isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+let coins = parseInt(localStorage.getItem("coins")) || 0;
 
-// ===== تحديث العملات =====
+// تحديث عرض العملات
 function updateCoinsDisplay() {
   coinsDisplay.textContent = isLoggedIn ? `${coins} 🪙` : '----';
 }
 
+// عند الضغط على العملات
 coinsDisplay.onclick = () => {
-  if(isLoggedIn){
-    window.location.href = "coins-shop.html";
-  } else {
-    showToast("عليك تسجيل الدخول أولاً");
-  }
-};
+  if(isLoggedIn) window.location.href="coins-shop.html";
+  else showToast("عليك تسجيل الدخول أولاً");
+}
 
-// ===== Sidebar =====
+// Sidebar
 menuBtn.onclick = () => sidebar.classList.toggle('active');
-
 settingsToggle.onclick = () => {
-  toastMessage("تم دخول Settings ✅", 1.5);
+  toast.textContent="تم دخول Settings ✅"; toast.style.display='block';
+  setTimeout(()=>toast.style.display='none',1500);
   sidebar.classList.remove('active');
-  content.innerHTML = `<div class="game-title">Settings</div>`;
+  content.innerHTML=`<div class="game-title">Settings</div>`;
 };
+homePageBtn.onclick = () => { sidebar.classList.remove('active'); renderHome(); };
 
-homePageBtn.onclick = () => {
-  sidebar.classList.remove('active');
-  loadHomePage();
-};
+// Profile
+profileBtn.onclick = () => { window.location.href="Profil.html"; };
 
-profileBtn.onclick = () => { window.location.href = "Profil.html"; };
-
-// ===== الألعاب =====
-function loadHomePage(){
+// الألعاب
+function attachNormalButton() {
+  const btn = document.getElementById('normalBtn');
+  btn.onclick = () => {
+    if(!isLoggedIn) showToast("عليك تسجيل الدخول أولاً");
+    else startNormal();
+  }
+}
+function renderHome() {
   content.innerHTML = `
     <div class="game-title">مرحبا بك في Words Heroes</div>
     <button class="game-btn yellow" id="normalBtn">normal Mood</button>
-    <button class="game-btn blue" id="onlineBtn">مباريات أونلاين</button>
-    <button class="game-btn gray" id="champBtn">🏆 Championships</button>
+    <button class="game-btn blue" onclick="startOnline()">مباريات أونلاين</button>
+    <button class="game-btn gray" onclick="startChampionship()">🏆 Championships</button>
   `;
-  attachButtons();
+  attachNormalButton();
+}
+attachNormalButton();
+
+// الألعاب الفعلية
+function startNormal(){ window.location.href="normal-mood.html"; }
+function startOnline(){ showToast("سيتم إضافته لاحقاً"); }
+function startChampionship(){ showToast("ليست هناك أي بطولة حالياً"); }
+
+// Toast فقط نص
+function showToast(msg,duration=3){
+  toast.style.display='block';
+  toast.textContent = msg;
+  setTimeout(()=>toast.style.display='none', duration*1000);
 }
 
-function attachButtons(){
-  const normalBtn = document.getElementById('normalBtn');
-  normalBtn.onclick = () => {
-    if(!isLoggedIn) showToast("عليك تسجيل الدخول أولاً");
-    else startNormal();
-  };
-  const onlineBtn = document.getElementById('onlineBtn');
-  onlineBtn.onclick = () => showToast("سيتم إضافته لاحقاً");
-  const champBtn = document.getElementById('champBtn');
-  champBtn.onclick = () => showToast("ليست هناك أي بطولة حالياً");
-}
-
-function startNormal(){ window.location.href = "normal-mood.html"; }
-
-// ===== Toast =====
-function showToast(msg, duration=3){
-  toast.style.display = 'block';
-  toast.innerHTML = `<div>${msg}</div><div id="progress"></div>`;
-  const progress = document.getElementById('progress');
-  progress.style.width='100%';
-  let time = duration;
-  const interval = setInterval(()=>{
-    time -= 0.1;
-    if(time <=0){
-      clearInterval(interval);
-      toast.style.display='none';
-    } else {
-      progress.style.width = (time/duration)*100 + '%';
-    }
-  },100);
-}
-
-function toastMessage(msg, duration=3){
-  showToast(msg,duration);
-}
-
-// ===== بدء الصفحة =====
+// تحديث العملات عند تحميل الصفحة
 updateCoinsDisplay();
-attachButtons();
-
 </script>
 </body>
 </html>
