@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Words Heroes</title>
-
 <style>
 body {
   margin: 0;
@@ -17,7 +16,6 @@ body {
   color: white;
 }
 
-/* ===== الهيدر ===== */
 header {
   display: flex;
   justify-content: space-between;
@@ -47,7 +45,6 @@ header h1 {
   color: #333;
 }
 
-/* ===== السايدبار ===== */
 .sidebar {
   position: fixed;
   top: 60px;
@@ -61,25 +58,20 @@ header h1 {
   transition: left 0.3s ease;
 }
 
-.sidebar.active {
-  left: 0;
-}
+.sidebar.active { left: 0; }
 
-.sidebar button, .sidebar h2 {
+.sidebar h2 {
   cursor: pointer;
   user-select: none;
   display: block;
   width: 100%;
   margin: 10px 0;
   font-size: 18px;
-  background: none;
-  border: none;
   color: white;
   text-align: left;
   padding: 5px 0;
 }
 
-/* ===== المحتوى ===== */
 .content {
   flex: 1;
   padding: 20px;
@@ -91,21 +83,6 @@ header h1 {
   margin-bottom: 20px;
 }
 
-/* رسالة toast */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #808080; /* رمادي */
-  color: white;
-  padding: 10px 18px;
-  border-radius: 8px;
-  display: none;
-  font-weight: bold;
-}
-
-/* أزرار الألعاب */
 .game-btn {
   padding: 20px;
   margin: 10px 0;
@@ -117,12 +94,59 @@ header h1 {
   width: 100%;
   color: white;
 }
-.yellow { background-color: #FFD700;}
+.yellow { background-color: #FFD700; }
 .blue { background-color: #00BFFF; }
-.gray { background-color: #808080;} /* زر Championships */
+.gray { background-color: #808080; }
+
+/* رسالة تسجيل الدخول */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #2c006d, #9b1acc, #e02fb5);
+  color: white;
+  padding: 15px 18px;
+  border-radius: 10px;
+  display: none;
+  font-weight: bold;
+  width: 300px;
+  max-width: 90%;
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+}
+
+.toast button {
+  padding: 5px 10px;
+  margin-right: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.toast #skipBtn {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.toast #loginBtn {
+  background: white;
+  color: black;
+  border: none;
+}
+
+/* شريط تقدم عكسي أبيض */
+.toast #progress {
+  height: 100%;
+  background: white;
+  width: 100%;
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -131,13 +155,11 @@ header h1 {
   <div class="icon" id="profileBtn">👤</div>
 </header>
 
-<!-- السايدبار -->
 <div class="sidebar" id="sidebar">
-  <button id="homePageBtn">Home Page</button>
-  <h2 id="settingsToggle">Settings ></h2>
+  <h2 id="homePageBtn">Home Page</h2>
+  <h2 id="settingsToggle">Settings</h2>
 </div>
 
-<!-- المحتوى -->
 <div class="content" id="content">
   <div class="game-title">مرحبا بك في Words Heroes</div>
   <button class="game-btn yellow" onclick="startNormal()">normal Mood</button>
@@ -145,7 +167,6 @@ header h1 {
   <button class="game-btn gray" onclick="startChampionship()">🏆 Championships</button>
 </div>
 
-<!-- رسالة toast -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -157,10 +178,11 @@ const toast = document.getElementById('toast');
 const settingsToggle = document.getElementById('settingsToggle');
 const homePageBtn = document.getElementById('homePageBtn');
 
-// فتح وإغلاق السايدبار
+let isLoggedIn = false; // تغيير حسب تسجيل الدخول
+
+// السايدبار
 menuBtn.onclick = () => sidebar.classList.toggle('active');
 
-// الضغط على Settings لعرض toast
 settingsToggle.onclick = () => {
   toast.textContent = "تم دخول Settings ✅";
   toast.style.display = 'block';
@@ -169,7 +191,6 @@ settingsToggle.onclick = () => {
   content.innerHTML = `<div class="game-title">Settings</div>`;
 };
 
-// الضغط على Home Page لعرض الصفحة الرئيسية
 homePageBtn.onclick = () => {
   sidebar.classList.remove('active');
   content.innerHTML = `
@@ -180,26 +201,64 @@ homePageBtn.onclick = () => {
   `;
 };
 
-// الضغط على أيقونة البروفايل لفتح صفحة Profil.html
-profileBtn.onclick = () => {
-  window.location.href = "Profil.html";
-};
+profileBtn.onclick = () => { window.location.href = "Profil.html"; };
 
-// دوال الألعاب
-function startNormal() {
-  content.innerHTML = `<div class="game-title">Normal Mood</div>`;
-}
-
+// الألعاب
+function startNormal() { window.location.href = "normal-mood.html"; }
 function startOnline() {
-  content.innerHTML = `<div class="game-title">مباريات أونلاين</div>`;
+  toast.textContent = "سيتم إضافته لاحقاً";
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 2000);
 }
-
 function startChampionship() {
   toast.textContent = "ليست هناك أي بطولة حالياً";
   toast.style.display = 'block';
   setTimeout(() => toast.style.display = 'none', 2000);
 }
-</script>
 
+// --------------------
+// رسالة تسجيل الدخول مع شريط تنازلي عكسي أبيض
+// --------------------
+function showLoginToast() {
+  if(isLoggedIn) return;
+
+  let duration = 5;
+  toast.style.display = 'block';
+  toast.innerHTML = `
+    <div>لم يتم تسجيل الحساب</div>
+    <div style="height:4px; background: rgba(255,255,255,0.3); width:100%; position:relative; overflow:hidden; border-radius:3px;">
+      <div id="progress" style="height:100%; width:100%;"></div>
+    </div>
+    <div style="margin-top:5px;">
+      <button id="skipBtn">تخطي</button>
+      <button id="loginBtn">تسجيل</button>
+      <span id="countdown">${duration}s</span>
+    </div>
+  `;
+
+  const progress = document.getElementById('progress');
+  const countdown = document.getElementById('countdown');
+  const skipBtn = document.getElementById('skipBtn');
+  const loginBtn = document.getElementById('loginBtn');
+
+  let interval = setInterval(() => {
+    duration -= 0.1;
+    if(duration <= 0){
+      clearInterval(interval);
+      toast.style.display = 'none';
+    } else {
+      countdown.textContent = Math.ceil(duration) + 's';
+      progress.style.width = (duration/5)*100 + '%';
+    }
+  }, 100);
+
+  skipBtn.onclick = () => { clearInterval(interval); toast.style.display = 'none'; };
+  loginBtn.onclick = () => { clearInterval(interval); window.location.href = "Profil.html"; };
+}
+
+// عرض الرسالة كل 10-20 ثانية
+setInterval(() => { showLoginToast(); }, 10000 + Math.random()*10000);
+
+</script>
 </body>
 </html>
