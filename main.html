@@ -32,6 +32,20 @@ header h1 {
   font-weight: bold;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coins-display {
+  cursor: pointer;
+  font-weight: bold;
+  background: rgba(255,255,255,0.2);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
 .icon {
   width: 28px;
   height: 28px;
@@ -152,7 +166,10 @@ header h1 {
 <header>
   <div class="icon" id="menuBtn">&#9776;</div>
   <h1>Words Heroes</h1>
-  <div class="icon" id="profileBtn">👤</div>
+  <div class="header-right">
+    <div class="coins-display" id="coinsDisplay">----</div>
+    <div class="icon" id="profileBtn">👤</div>
+  </div>
 </header>
 
 <div class="sidebar" id="sidebar">
@@ -162,7 +179,7 @@ header h1 {
 
 <div class="content" id="content">
   <div class="game-title">مرحبا بك في Words Heroes</div>
-  <button class="game-btn yellow" onclick="startNormal()">normal Mood</button>
+  <button class="game-btn yellow" id="normalBtn">normal Mood</button>
   <button class="game-btn blue" onclick="startOnline()">مباريات أونلاين</button>
   <button class="game-btn gray" onclick="startChampionship()">🏆 Championships</button>
 </div>
@@ -177,8 +194,24 @@ const content = document.getElementById('content');
 const toast = document.getElementById('toast');
 const settingsToggle = document.getElementById('settingsToggle');
 const homePageBtn = document.getElementById('homePageBtn');
+const coinsDisplay = document.getElementById('coinsDisplay');
+const normalBtn = document.getElementById('normalBtn');
 
-let isLoggedIn = false; // تغيير حسب تسجيل الدخول
+let isLoggedIn = false; // false = لم يسجل
+let coins = 0; // العملات
+
+// تحديث العملات
+function updateCoinsDisplay() {
+  coinsDisplay.textContent = isLoggedIn ? `Coins: ${coins}` : '----';
+}
+
+coinsDisplay.onclick = () => {
+  if(isLoggedIn){
+    window.location.href = "coins-shop.html";
+  } else {
+    showToast("عليك تسجيل الدخول أولاً");
+  }
+};
 
 // السايدبار
 menuBtn.onclick = () => sidebar.classList.toggle('active');
@@ -195,15 +228,28 @@ homePageBtn.onclick = () => {
   sidebar.classList.remove('active');
   content.innerHTML = `
     <div class="game-title">مرحبا بك في Words Heroes</div>
-    <button class="game-btn yellow" onclick="startNormal()">normal Mood</button>
+    <button class="game-btn yellow" id="normalBtn">normal Mood</button>
     <button class="game-btn blue" onclick="startOnline()">مباريات أونلاين</button>
     <button class="game-btn gray" onclick="startChampionship()">🏆 Championships</button>
   `;
+  attachNormalButton();
 };
 
 profileBtn.onclick = () => { window.location.href = "Profil.html"; };
 
 // الألعاب
+function attachNormalButton(){
+  const normalBtnNew = document.getElementById('normalBtn');
+  normalBtnNew.onclick = () => {
+    if(!isLoggedIn){
+      showToast("عليك تسجيل الدخول أولاً");
+    } else {
+      startNormal();
+    }
+  }
+}
+attachNormalButton();
+
 function startNormal() { window.location.href = "normal-mood.html"; }
 function startOnline() {
   toast.textContent = "سيتم إضافته لاحقاً";
@@ -217,47 +263,33 @@ function startChampionship() {
 }
 
 // --------------------
-// رسالة تسجيل الدخول مع شريط تنازلي عكسي أبيض
+// Toast تسجيل الدخول مع شريط تنازلي
 // --------------------
-function showLoginToast() {
-  if(isLoggedIn) return;
+function showToast(msg,duration=3){
+  toast.style.display='block';
+  toast.innerHTML = `<div>${msg}</div>`;
+  const progress = document.createElement('div');
+  progress.id='progress';
+  progress.style.width='100%';
+  progress.style.height='4px';
+  progress.style.background='white';
+  progress.style.marginTop='5px';
+  progress.style.borderRadius='3px';
+  toast.appendChild(progress);
 
-  let duration = 5;
-  toast.style.display = 'block';
-  toast.innerHTML = `
-    <div>لم يتم تسجيل الحساب</div>
-    <div style="height:4px; background: rgba(255,255,255,0.3); width:100%; position:relative; overflow:hidden; border-radius:3px;">
-      <div id="progress" style="height:100%; width:100%;"></div>
-    </div>
-    <div style="margin-top:5px;">
-      <button id="skipBtn">تخطي</button>
-      <button id="loginBtn">تسجيل</button>
-      <span id="countdown">${duration}s</span>
-    </div>
-  `;
-
-  const progress = document.getElementById('progress');
-  const countdown = document.getElementById('countdown');
-  const skipBtn = document.getElementById('skipBtn');
-  const loginBtn = document.getElementById('loginBtn');
-
-  let interval = setInterval(() => {
-    duration -= 0.1;
-    if(duration <= 0){
-      clearInterval(interval);
-      toast.style.display = 'none';
-    } else {
-      countdown.textContent = Math.ceil(duration) + 's';
-      progress.style.width = (duration/5)*100 + '%';
-    }
-  }, 100);
-
-  skipBtn.onclick = () => { clearInterval(interval); toast.style.display = 'none'; };
-  loginBtn.onclick = () => { clearInterval(interval); window.location.href = "Profil.html"; };
+  let time=duration;
+  const interval=setInterval(()=>{
+    time-=0.1;
+    if(time<=0){ clearInterval(interval); toast.style.display='none'; }
+    else{ progress.style.width=(time/duration)*100 + '%'; }
+  },100);
 }
 
-// عرض الرسالة كل 10-20 ثانية
-setInterval(() => { showLoginToast(); }, 10000 + Math.random()*10000);
+// مثال: تفعيل تسجيل الدخول لتجربة العملات
+// قم بتغيير isLoggedIn و coins حسب الحاجة
+isLoggedIn = false; // false = غير مسجل، true = مسجل
+coins = 100; // عدد العملات
+updateCoinsDisplay();
 
 </script>
 </body>
